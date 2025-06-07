@@ -1,0 +1,84 @@
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a//dev/null b/index.html
+index 0000000000000000000000000000000000000000..cfb9ade2a08dced44204a19995dfcd5498319fac 100644
+--- a//dev/null
++++ b/index.html
+@@ -0,0 +1,75 @@
++<!DOCTYPE html>
++<html lang="en">
++<head>
++<meta charset="UTF-8">
++<meta name="viewport" content="width=device-width, initial-scale=1.0">
++<title>Pomodoro App</title>
++<style>
++  body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; margin-top: 50px; }
++  #timer { font-size: 48px; margin-bottom: 20px; }
++  button { padding: 10px 20px; margin: 5px; }
++</style>
++</head>
++<body>
++<h1>Pomodoro Timer</h1>
++<div id="timer">25:00</div>
++<div>
++  <button id="start">Start</button>
++  <button id="pause" disabled>Pause</button>
++  <button id="reset">Reset</button>
++</div>
++<script>
++let timerDisplay = document.getElementById('timer');
++let startButton = document.getElementById('start');
++let pauseButton = document.getElementById('pause');
++let resetButton = document.getElementById('reset');
++
++let duration = 25 * 60; // seconds
++let remaining = duration;
++let intervalId = null;
++
++function updateDisplay() {
++  let minutes = Math.floor(remaining / 60).toString().padStart(2, '0');
++  let seconds = (remaining % 60).toString().padStart(2, '0');
++  timerDisplay.textContent = `${minutes}:${seconds}`;
++}
++
++function tick() {
++  if (remaining > 0) {
++    remaining--;
++    updateDisplay();
++  } else {
++    clearInterval(intervalId);
++    intervalId = null;
++    alert('Time is up! Take a break.');
++  }
++}
++
++startButton.addEventListener('click', () => {
++  if (intervalId === null) {
++    intervalId = setInterval(tick, 1000);
++    startButton.disabled = true;
++    pauseButton.disabled = false;
++  }
++});
++
++pauseButton.addEventListener('click', () => {
++  if (intervalId !== null) {
++    clearInterval(intervalId);
++    intervalId = null;
++    startButton.disabled = false;
++    pauseButton.disabled = true;
++  }
++});
++
++resetButton.addEventListener('click', () => {
++  clearInterval(intervalId);
++  intervalId = null;
++  remaining = duration;
++  updateDisplay();
++  startButton.disabled = false;
++  pauseButton.disabled = true;
++});
++</script>
++</body>
++</html>
+ 
+EOF
+)
